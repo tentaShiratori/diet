@@ -1,41 +1,62 @@
-import { Image, Text, StyleSheet } from 'react-native';
-
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { Button } from 'tamagui';
-import { db } from '@/db';
-import { type Weight, weights, type InsertWeight } from '@/db/schema';
-import { useState } from 'react';
-import { ulid } from '@/lib/ulid';
-import { desc, gte } from 'drizzle-orm';
+import { StyleSheet, useWindowDimensions, View, StatusBar } from 'react-native';
+import { Canvas, Circle } from '@shopify/react-native-skia';
+import React from 'react';
+import Animated, { useSharedValue, withDecay, useAnimatedStyle } from 'react-native-reanimated';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 export default function HomeScreen() {
-  const [weight, setWeight] = useState<Weight[] | null>(null);
+  const { width, height } = useWindowDimensions();
+  const tabBarHeight = useBottomTabBarHeight();
+  const statusHeight = StatusBar.currentHeight;
+  const translateX = useSharedValue(width / 2);
+  const translateY = useSharedValue(height / 2);
+  const radius = 30;
+  const verticalBounds = [radius + (statusHeight ?? 0), height - tabBarHeight - radius];
+  const horizontalBounds = [radius, width - radius];
+
+  const gesture = Gesture.Pan()
+    .onChange((e) => {
+      if (translateX.value + e.changeX > horizontalBounds[0] && translateX.value + e.changeX < horizontalBounds[1]) {
+        translateX.value += e.changeX;
+      }
+      if (translateY.value + e.changeY > verticalBounds[0] && translateY.value + e.changeY < verticalBounds[1]) {
+        translateY.value += e.changeY;
+      }
+    })
+    .onEnd((e) => {
+      translateX.value = withDecay({
+        velocity: e.velocityX,
+        clamp: [horizontalBounds[0], horizontalBounds[1]],
+      });
+      translateY.value = withDecay({
+        velocity: e.velocityY,
+        clamp: [verticalBounds[0], verticalBounds[1]],
+      });
+    });
+  const style = useAnimatedStyle(() => ({
+    position: 'absolute',
+    top: -radius,
+    left: -radius,
+    width: radius * 2,
+    height: radius * 2,
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
+  }));
+  const singleTap = Gesture.Tap()
+    .maxDuration(250)
+    .onStart(() => {
+      console.log('Single tap!');
+    });
+  const compose = Gesture.Race(singleTap, gesture);
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={<Image source={require('@/assets/images/partial-react-logo.png')} style={styles.reactLogo} />}
-    >
-      <Button
-        theme="blue"
-        onPress={async () => {
-          console.log('Inserting weight');
-          try {
-            const result = await db
-              .select()
-              .from(weights)
-              .where(gte(weights.createdAt, '2025-02-11 11:10:04'))
-              .orderBy(desc(weights.createdAt));
-            setWeight(result);
-            console.log(result);
-          } catch (e) {
-            console.log('Error inserting weight', e);
-          }
-        }}
-      >
-        Hello world
-      </Button>
-      <Text>{weight ? `Weight: ${JSON.stringify(weight, undefined, 2)}` : 'No weight'}</Text>
-    </ParallaxScrollView>
+    <View style={{ flex: 1 }}>
+      <Canvas style={{ flex: 1, height: 300 }}>
+        <Circle cx={translateX} cy={translateY} r={radius} color="#3E3" />
+      </Canvas>
+      <GestureDetector gesture={compose}>
+        <Animated.View style={style} />
+      </GestureDetector>
+    </View>
   );
 }
 

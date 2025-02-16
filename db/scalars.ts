@@ -10,19 +10,20 @@ export const ulid = customType<{
 });
 
 /**
- * 小数点以下2桁の重さを表すカスタム型
+ * 小数をIntで保存するカスタムデータ型
  */
-export const weight = customType<{
-  data: number;
-  driverData: number;
-}>({
-  dataType() {
-    return 'integer';
-  },
-  toDriver(value) {
-    return Math.floor(value * 100);
-  },
-  fromDriver(value) {
-    return value / 100;
-  },
-});
+export const decimal = (precision: number) =>
+  customType<{
+    data: number;
+    driverData: number;
+  }>({
+    dataType() {
+      return 'integer';
+    },
+    toDriver(value) {
+      return Math.floor(value * 10 ** precision);
+    },
+    fromDriver(value) {
+      return value / 10 ** precision;
+    },
+  });

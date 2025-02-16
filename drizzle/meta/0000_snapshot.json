@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "9bf99f53-432a-44a7-af80-0b8dd46367ba",
+  "id": "43fd8b38-5d48-4b76-92c6-aa76a8b1c19d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "weights": {
-      "name": "weights",
+    "bodyInfos": {
+      "name": "bodyInfos",
       "columns": {
         "id": {
           "name": "id",
@@ -18,8 +18,23 @@
           "name": "weight",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
+        },
+        "fatRate": {
+          "name": "fatRate",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "recorded_at": {
+          "name": "recorded_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
         },
         "created_at": {
           "name": "created_at",

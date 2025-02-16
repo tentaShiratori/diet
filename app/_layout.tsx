@@ -9,8 +9,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { defaultConfig } from '@tamagui/config/v4';
 import { TamaguiProvider, createTamagui } from '@tamagui/core';
 import { Migrations } from '@/components/Migrations';
-import { db } from '@/db';
-import { sql } from 'drizzle-orm';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // you usually export this from a tamagui.config.ts file
 const config = createTamagui(defaultConfig);
@@ -43,15 +42,17 @@ export default function RootLayout() {
 
   return (
     <Migrations>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <TamaguiProvider config={config}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </TamaguiProvider>
-      </ThemeProvider>
+      <GestureHandlerRootView>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <TamaguiProvider config={config}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="auto" />
+          </TamaguiProvider>
+        </ThemeProvider>
+      </GestureHandlerRootView>
     </Migrations>
   );
 }
