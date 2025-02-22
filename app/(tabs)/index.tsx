@@ -51,7 +51,6 @@ export default function HomeScreen() {
   const compose = Gesture.Race(singleTap, gesture);
   return (
     <View style={{ flex: 1 }}>
-      <Link href="/storybook">Settings</Link>
       <Canvas style={{ flex: 1, height: 300 }}>
         <Circle cx={translateX} cy={translateY} r={radius} color="#3E3" />
       </Canvas>

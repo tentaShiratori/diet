@@ -11,7 +11,10 @@
     "test": "jest --watchAll",
     "check": "biome check --write",
     "gen-migrate": "cross-env DRIZZLE=true drizzle-kit generate",
-    "storybook-generate": "sb-rn-get-stories"
+    "storybook-generate": "sb-rn-get-stories",
+    "storybook": "cross-env STORYBOOK_ENABLED='true' expo start",
+    "storybook:ios": "cross-env STORYBOOK_ENABLED='true' expo start --ios",
+    "storybook:android": "cross-env STORYBOOK_ENABLED='true' expo start --android"
   },
   "jest": {
     "preset": "jest-expo",
