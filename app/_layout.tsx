@@ -1,13 +1,13 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Slot, Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { defaultConfig } from '@tamagui/config/v4';
-import { TamaguiProvider, View, createTamagui } from '@tamagui/core';
+import { TamaguiProvider, createTamagui } from '@tamagui/core';
 import { Migrations } from '@/components/Migrations';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Constants from 'expo-constants';
@@ -26,6 +26,7 @@ declare module '@tamagui/core' {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const router = useRouter();
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -34,8 +35,11 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      if (Constants.expoConfig?.extra?.storybookEnabled) {
+        router.replace('/storybook');
+      }
     }
-  }, [loaded]);
+  }, [loaded, router]);
 
   if (!loaded) {
     return null;
@@ -46,14 +50,10 @@ export default function RootLayout() {
       <GestureHandlerRootView>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <TamaguiProvider config={config}>
-            {Constants.expoConfig?.extra?.storybookEnabled ? (
-              <Slot />
-            ) : (
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-            )}
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
             <StatusBar style="auto" />
           </TamaguiProvider>
         </ThemeProvider>
