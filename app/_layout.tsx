@@ -1,6 +1,6 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
@@ -10,7 +10,6 @@ import { defaultConfig } from '@tamagui/config/v4';
 import { TamaguiProvider, createTamagui } from '@tamagui/core';
 import { Migrations } from '@/components/Migrations';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Constants from 'expo-constants';
 
 // you usually export this from a tamagui.config.ts file
 const config = createTamagui(defaultConfig);
@@ -26,7 +25,6 @@ declare module '@tamagui/core' {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const router = useRouter();
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -35,11 +33,8 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      if (Constants.expoConfig?.extra?.storybookEnabled) {
-        router.replace('/storybook');
-      }
     }
-  }, [loaded, router]);
+  }, [loaded]);
 
   if (!loaded) {
     return null;
